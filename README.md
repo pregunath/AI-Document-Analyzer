@@ -88,7 +88,7 @@ npm run cdk -- deploy --all
 ## CI/CD Pipeline
 
 GitHub Actions is defined in [.github/workflows/main.yaml](.github/workflows/main.yaml). Pull requests run type
-checks, tests, and the frontend build. Pushes to `main` run those checks and deploy all CDK stacks.
+checks, tests, and the frontend build. Pushes to `main` or `master` run those checks and deploy all CDK stacks.
 
 Before enabling deployments, configure these GitHub repository settings:
 
