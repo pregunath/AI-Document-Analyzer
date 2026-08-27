@@ -3,6 +3,10 @@ node_modules/
 out/
 dist/
 lib/
+!infrastructure/lib/
+!infrastructure/lib/*.ts
+!frontend/src/lib/
+!frontend/src/lib/*.ts
 cdk.out/
 coverage/
 .env
