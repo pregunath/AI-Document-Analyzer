@@ -87,24 +87,17 @@ npm run cdk -- deploy --all
 
 ## CI/CD Pipeline
 
-The `AiDocumentAnalyzerPipelineStack` creates an AWS CodePipeline with a GitHub
-CodeConnections source and a CodeBuild stage. Every push to the configured branch runs
-type checks, tests, the frontend build, and then deploys all CDK stacks.
+GitHub Actions is defined in [.github/workflows/main.yaml](.github/workflows/main.yaml). Pull requests run type
+checks, tests, and the frontend build. Pushes to `main` run those checks and deploy all CDK stacks.
 
-Create and authorize a GitHub connection in the AWS Console, then deploy the pipeline stack
-with its connection and repository parameters:
+Before enabling deployments, configure these GitHub repository settings:
 
-```bash
-npm run cdk -- deploy AiDocumentAnalyzerPipelineStack \
-    --parameters ConnectionArn=arn:aws:codeconnections:REGION:ACCOUNT:connection/ID \
-    --parameters RepositoryOwner=OWNER \
-    --parameters RepositoryName=REPOSITORY \
-    --parameters BranchName=main
-```
+- Repository variable `AWS_REGION`, such as `us-east-1`.
+- Repository secret `AWS_DEPLOY_ROLE_ARN`, containing an AWS IAM role trusted by GitHub's OIDC
+  provider for this repository and branch.
 
-The connection must be authorized in the AWS Console after creation. The pipeline build role
-uses `PowerUserAccess` plus scoped CDK bootstrap role passing to support the current multi-stack
-deployment; replace this with a least-privilege deployment role before production use.
+The workflow uses short-lived OIDC credentials and does not store AWS access keys in GitHub.
+The deployment role should be scoped to the CDK stacks and bootstrap resources used by this project.
 
 The stack creates a private encrypted S3 bucket, encrypted on-demand DynamoDB table, encrypted SQS processing queue and DLQ, two Lambda functions, and a regional API Gateway with `GET /api/health`. The S3-to-SQS event notification is deliberately deferred until the document upload phase, when its producer and message contract are implemented.
 
