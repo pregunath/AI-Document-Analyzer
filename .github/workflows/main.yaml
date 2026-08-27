@@ -36,8 +36,17 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
-      - name: Run tests
-        run: npm test
+      - name: Build backend
+        run: npm --workspace backend run build
+
+      - name: Test backend
+        run: npm --workspace backend test
+
+      - name: Test infrastructure
+        run: npm --workspace infrastructure test
+
+      - name: Synthesize CDK
+        run: npm run cdk -- synth
 
       - name: Build frontend
         run: npm run build:frontend

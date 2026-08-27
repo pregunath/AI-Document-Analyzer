@@ -111,8 +111,9 @@ When ready, deploy all four stacks:
 
 ## CI/CD Pipeline
 
-GitHub Actions is defined in [.github/workflows/main.yaml](.github/workflows/main.yaml). Pull requests run type
-checks, tests, and the frontend build. Pushes to `main` or `master` run those checks and deploy all CDK stacks.
+GitHub Actions is defined in [.github/workflows/main.yaml](.github/workflows/main.yaml). Pull requests run backend
+and infrastructure type checks, backend compilation, backend and infrastructure tests, CDK synthesis, and the
+frontend build. Pushes to `main` or `master` run those checks and deploy all CDK stacks.
 
 Before enabling deployments, configure these GitHub repository settings:
 
