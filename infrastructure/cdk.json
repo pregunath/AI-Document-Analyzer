@@ -1,0 +1,6 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/ai-document-analyzer.ts",
+  "context": {
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true
+  }
+}

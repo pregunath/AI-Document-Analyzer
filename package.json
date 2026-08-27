@@ -1,0 +1,24 @@
+{
+  "name": "ai-document-analyzer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portfolio full-stack AI document analysis application.",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "infrastructure"
+  ],
+  "scripts": {
+    "dev:frontend": "npm --workspace frontend run dev",
+    "build:frontend": "npm --workspace frontend run build",
+    "lint": "npm --workspace frontend run lint",
+    "test": "npm --workspace backend test && npm --workspace infrastructure test",
+    "typecheck": "npm --workspace backend run typecheck && npm --workspace infrastructure run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "cdk": "npm --workspace infrastructure run cdk"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}
