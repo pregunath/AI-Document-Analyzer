@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { ApiStack } from '../lib/api-stack';
 import { ComputeStack } from '../lib/compute-stack';
 import { MessagingStack } from '../lib/messaging-stack';
+import { PipelineStack } from '../lib/pipeline-stack';
 import { StorageStack } from '../lib/storage-stack';
 
 const app = new cdk.App();
@@ -22,3 +23,5 @@ const api = new ApiStack(app, 'AiDocumentAnalyzerApiStack', compute.apiFunction,
 compute.addStackDependency(storage);
 compute.addStackDependency(messaging);
 api.addStackDependency(compute);
+
+new PipelineStack(app, 'AiDocumentAnalyzerPipelineStack', { env });
