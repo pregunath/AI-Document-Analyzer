@@ -42,6 +42,21 @@ npm run dev:frontend
 
 Open http://localhost:3000 to view the frontend.
 
+### Authentication
+
+Phase 4 adds a Cognito user pool and protects the API health route with a Cognito authorizer.
+Deploy the infrastructure first, then copy the `UserPoolId`, `UserPoolClientId`, and `CognitoRegion`
+outputs into `frontend/.env.local` using `frontend/.env.example` as a template:
+
+```bash
+npm run cdk -- deploy --all
+cp frontend/.env.example frontend/.env.local
+npm run dev:frontend
+```
+
+The browser client is a public Cognito app client with no secret. New users confirm their email
+before signing in. The API expects a Cognito access token in the `Authorization: Bearer <token>` header.
+
 ## CDK
 
 Configure AWS credentials using your normal AWS CLI profile or environment. Verify the active identity:

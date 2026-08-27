@@ -1,6 +1,7 @@
 'use client';
 
 import { ChangeEvent, useMemo, useState } from 'react';
+import { signOut } from 'aws-amplify/auth';
 import {
   ArrowUpRight,
   Bell,
@@ -171,7 +172,7 @@ export default function Home() {
             </button>
           </div>
           {showProfile && (
-            <button className="logout-button" type="button">
+            <button className="logout-button" onClick={() => signOut()} type="button">
               <LogOut size={14} /> Sign out
             </button>
           )}
