@@ -49,7 +49,7 @@ Deploy the infrastructure first, then copy the `UserPoolId`, `UserPoolClientId`,
 outputs into `frontend/.env.local` using `frontend/.env.example` as a template:
 
 ```bash
-npm run cdk -- deploy --all
+npm run deploy
 cp frontend/.env.example frontend/.env.local
 npm run dev:frontend
 ```
@@ -82,7 +82,7 @@ npm run cdk -- diff
 When ready, deploy all four stacks:
 
 ```bash
-npm run cdk -- deploy --all
+  npm run deploy
 ```
 
 ## CI/CD Pipeline

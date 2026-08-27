@@ -16,7 +16,8 @@
     "typecheck": "npm --workspace backend run typecheck && npm --workspace infrastructure run typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "cdk": "cd infrastructure && node ../node_modules/aws-cdk/bin/cdk"
+    "cdk": "cd infrastructure && node ../node_modules/aws-cdk/bin/cdk",
+    "deploy": "cd infrastructure && node ../node_modules/aws-cdk/bin/cdk deploy --all --require-approval never"
   },
   "devDependencies": {
     "prettier": "^3.6.2"
