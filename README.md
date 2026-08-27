@@ -74,6 +74,9 @@ $env:GOOGLE_CLIENT_SECRET = 'your-google-client-secret'
 npm run deploy
 ```
 
+The current Google client ID is configured in the local environment file. The client secret must
+still be supplied in the terminal or as the GitHub Actions secret `GOOGLE_CLIENT_SECRET`.
+
 Copy the resulting `CognitoDomain` output into `NEXT_PUBLIC_COGNITO_DOMAIN` in
 `frontend/.env.local`, then restart the frontend. Register `http://localhost:3000/` as an
 authorized JavaScript origin and callback URL in the Cognito app client configuration.
@@ -114,13 +117,46 @@ checks, tests, and the frontend build. Pushes to `main` or `master` run those ch
 Before enabling deployments, configure these GitHub repository settings:
 
 - Repository variable `AWS_REGION`, such as `us-east-1`.
-- Repository secret `AWS_DEPLOY_ROLE_ARN`, containing an AWS IAM role trusted by GitHub's OIDC
-  provider for this repository and branch.
+- Repository secret `AWS_DEPLOY_ROLE_ARN`, containing a dedicated AWS IAM role trusted by GitHub's
+  OIDC provider for `pregunath/AI-Document-Analyzer`.
 
 The workflow uses short-lived OIDC credentials and does not store AWS access keys in GitHub.
 The deployment role should be scoped to the CDK stacks and bootstrap resources used by this project.
 If Google sign-in is enabled, add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` as GitHub repository
 secrets so automated deployments preserve the provider configuration.
+
+### GitHub OIDC AWS Setup
+
+In IAM, add the GitHub OIDC identity provider with URL
+`https://token.actions.githubusercontent.com` and audience `sts.amazonaws.com`. Create a dedicated
+deployment role with this trust policy, replacing the account ID if deploying elsewhere:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::171022098710:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": "repo:pregunath/AI-Document-Analyzer:ref:refs/heads/master"
+        }
+      }
+    }
+  ]
+}
+```
+
+Put the resulting role ARN in `AWS_DEPLOY_ROLE_ARN`. Do not use the CDK bootstrap deploy role
+directly; its trust policy is for the AWS account, not GitHub. Grant the dedicated role the
+least-privilege permissions required by `cdk deploy --all` before using it for production.
 
 The stack creates a private encrypted S3 bucket, encrypted on-demand DynamoDB table, encrypted SQS processing queue and DLQ, two Lambda functions, and a regional API Gateway with `GET /api/health`. The S3-to-SQS event notification is deliberately deferred until the document upload phase, when its producer and message contract are implemented.
 
