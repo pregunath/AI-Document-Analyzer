@@ -26,11 +26,44 @@ export class ApiStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const googleEnabled = Boolean(googleClientId && googleClientSecret);
+    let hostedDomain: cognito.UserPoolDomain | undefined;
+
+    if (googleEnabled) {
+      new cognito.UserPoolIdentityProviderGoogle(this, 'GoogleProvider', {
+        userPool,
+        clientId: googleClientId!,
+        clientSecretValue: cdk.SecretValue.unsafePlainText(googleClientSecret!),
+        scopes: ['openid', 'email', 'profile'],
+        attributeMapping: {
+          email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+          givenName: cognito.ProviderAttribute.GOOGLE_GIVEN_NAME,
+          familyName: cognito.ProviderAttribute.GOOGLE_FAMILY_NAME,
+        },
+      });
+      hostedDomain = userPool.addDomain('HostedDomain', {
+        cognitoDomain: { domainPrefix: `ai-document-analyzer-${this.account}` },
+      });
+    }
+
     const userPoolClient = userPool.addClient('WebClient', {
       generateSecret: false,
       authFlows: { userSrp: true, userPassword: true },
       enableTokenRevocation: true,
       refreshTokenValidity: cdk.Duration.days(30),
+      supportedIdentityProviders: googleEnabled
+        ? [cognito.UserPoolClientIdentityProvider.COGNITO, cognito.UserPoolClientIdentityProvider.GOOGLE]
+        : [cognito.UserPoolClientIdentityProvider.COGNITO],
+      oAuth: googleEnabled
+        ? {
+            flows: { authorizationCodeGrant: true },
+            scopes: [cognito.OAuthScope.OPENID, cognito.OAuthScope.EMAIL, cognito.OAuthScope.PROFILE],
+            callbackUrls: ['http://localhost:3000/'],
+            logoutUrls: ['http://localhost:3000/'],
+          }
+        : undefined,
     });
 
     const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'ApiAuthorizer', {
@@ -63,5 +96,8 @@ export class ApiStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'UserPoolId', { value: userPool.userPoolId });
     new cdk.CfnOutput(this, 'UserPoolClientId', { value: userPoolClient.userPoolClientId });
     new cdk.CfnOutput(this, 'CognitoRegion', { value: this.region });
+    if (hostedDomain) {
+      new cdk.CfnOutput(this, 'CognitoDomain', { value: hostedDomain.domainName });
+    }
   }
 }

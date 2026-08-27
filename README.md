@@ -57,6 +57,27 @@ npm run dev:frontend
 The browser client is a public Cognito app client with no secret. New users confirm their email
 before signing in. The API expects a Cognito access token in the `Authorization: Bearer <token>` header.
 
+### Google Sign-In
+
+Google sign-in is optional and is enabled during CDK synthesis when both environment variables
+are present. In Google Cloud Console, create a Web OAuth client and add this authorized redirect URI:
+
+```text
+https://COGNITO_DOMAIN/oauth2/idpresponse
+```
+
+Deploy with the Google credentials supplied only to the local process or CI secret store:
+
+```powershell
+$env:GOOGLE_CLIENT_ID = 'your-google-client-id'
+$env:GOOGLE_CLIENT_SECRET = 'your-google-client-secret'
+npm run deploy
+```
+
+Copy the resulting `CognitoDomain` output into `NEXT_PUBLIC_COGNITO_DOMAIN` in
+`frontend/.env.local`, then restart the frontend. Register `http://localhost:3000/` as an
+authorized JavaScript origin and callback URL in the Cognito app client configuration.
+
 ## CDK
 
 Configure AWS credentials using your normal AWS CLI profile or environment. Verify the active identity:
@@ -98,6 +119,8 @@ Before enabling deployments, configure these GitHub repository settings:
 
 The workflow uses short-lived OIDC credentials and does not store AWS access keys in GitHub.
 The deployment role should be scoped to the CDK stacks and bootstrap resources used by this project.
+If Google sign-in is enabled, add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` as GitHub repository
+secrets so automated deployments preserve the provider configuration.
 
 The stack creates a private encrypted S3 bucket, encrypted on-demand DynamoDB table, encrypted SQS processing queue and DLQ, two Lambda functions, and a regional API Gateway with `GET /api/health`. The S3-to-SQS event notification is deliberately deferred until the document upload phase, when its producer and message contract are implemented.
 

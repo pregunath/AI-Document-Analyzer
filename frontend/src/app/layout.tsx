@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Clearframe | AI Document Analyzer',
+  title: 'DocUAnalyze | AI Document Analyzer',
   description: 'Turn dense documents into clear decisions.',
 };
 

@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { confirmSignUp, getCurrentUser, signIn, signUp } from 'aws-amplify/auth';
-import { authConfigured } from '@/lib/auth';
+import { confirmSignUp, getCurrentUser, signIn, signInWithRedirect, signUp } from 'aws-amplify/auth';
+import { authConfigured, googleAuthConfigured } from '@/lib/auth';
 
 type AuthMode = 'signIn' | 'signUp' | 'confirm';
 
@@ -53,7 +53,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     <main className="auth-shell">
       <section className="auth-panel">
         <div className="brand-mark">✦</div>
-        <p className="eyebrow">Clearframe workspace</p>
+        <p className="eyebrow">DocUAnalyze workspace</p>
         <h1>{mode === 'signUp' ? 'Create your workspace' : mode === 'confirm' ? 'Check your inbox' : 'Welcome back'}</h1>
         <p className="auth-copy">
           {mode === 'confirm' ? `Enter the confirmation code sent to ${email}.` : 'Turn dense documents into clear decisions.'}
@@ -69,6 +69,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           {error && <p className="auth-error" role="alert">{error}</p>}
           <button className="button button-dark" type="submit">{mode === 'signUp' ? 'Create account' : mode === 'confirm' ? 'Confirm email' : 'Sign in'}</button>
         </form>
+        {mode === 'signIn' && googleAuthConfigured && (
+          <button className="button google-button" type="button" onClick={() => signInWithRedirect({ provider: 'Google' })}>
+            Continue with Google
+          </button>
+        )}
         {mode !== 'confirm' && (
           <button className="auth-switch" type="button" onClick={() => setMode(mode === 'signIn' ? 'signUp' : 'signIn')}>
             {mode === 'signIn' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}

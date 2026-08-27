@@ -59,6 +59,8 @@ button {
 .auth-error { color: #b24d40; font: 12px Arial, sans-serif; margin: 0; }
 .auth-switch { border: 0; background: transparent; color: #63706b; font: 12px Arial, sans-serif; margin: 20px auto 0; display: block; }
 .auth-switch:hover { color: var(--ink); }
+.google-button { width: 100%; margin-top: 12px; border: 1px solid #d7dfd9; background: #fff; color: var(--ink); }
+.google-button:hover { background: #f6f8f4; }
 .app-shell {
   display: flex;
   min-height: 100vh;

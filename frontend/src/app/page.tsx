@@ -131,7 +131,7 @@ export default function Home() {
         <div className="brand-mark">
           <Sparkles size={16} strokeWidth={2.5} />
         </div>
-        <div className="brand-name">clearframe</div>
+        <div className="brand-name">DocUAnalyze</div>
         <nav className="primary-nav" aria-label="Primary navigation">
           <div className="nav-label">Workspace</div>
           {navItems.map(({ label, icon: Icon }) => (
@@ -374,7 +374,7 @@ export default function Home() {
           <span>
             <span className="online-dot" /> All systems operational
           </span>
-          <span>Clearframe v0.1</span>
+          <span>DocUAnalyze v0.1</span>
         </footer>
       </section>
     </main>
