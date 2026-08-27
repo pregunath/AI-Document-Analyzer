@@ -147,7 +147,10 @@ deployment role with this trust policy, replacing the account ID if deploying el
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
         },
         "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:pregunath/AI-Document-Analyzer:ref:refs/heads/master"
+          "token.actions.githubusercontent.com:sub": [
+            "repo:pregunath@88980392/AI-Document-Analyzer@1348686537:ref:refs/heads/master",
+            "repo:pregunath/AI-Document-Analyzer:ref:refs/heads/master"
+          ]
         }
       }
     }
