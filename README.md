@@ -35,12 +35,42 @@ flowchart TD
 
 Prerequisites: Node.js 22.13+ and npm 10+.
 
+Install all workspace dependencies from the repository root:
+
 ```bash
 npm install
+```
+
+### Frontend
+
+Start the Next.js development server from the repository root:
+
+```bash
 npm run dev:frontend
 ```
 
-Open http://localhost:3000 to view the frontend.
+Open http://localhost:3000 to view the frontend. The frontend reads Cognito settings from
+`frontend/.env.local`; create it from `frontend/.env.example` after the AWS deployment.
+
+### Backend
+
+The backend is implemented as AWS Lambda handlers, so it does not run as a local HTTP server.
+Use these commands from the repository root to build and test it locally:
+
+```bash
+npm --workspace backend run build
+npm --workspace backend test
+```
+
+For local end-to-end development, run the frontend locally while the backend runs in AWS:
+
+```bash
+npm run deploy
+```
+
+The deployment prints the API Gateway URL. The deployed API is protected by Cognito and requires
+an access token in the `Authorization: Bearer <token>` header. The current backend only exposes
+the health handler; document upload and processing endpoints will be added in later phases.
 
 ### Authentication
 
@@ -50,8 +80,13 @@ outputs into `frontend/.env.local` using `frontend/.env.example` as a template:
 
 ```bash
 npm run deploy
-cp frontend/.env.example frontend/.env.local
 npm run dev:frontend
+```
+
+On Windows PowerShell, use this instead of `cp` when creating the environment file:
+
+```powershell
+Copy-Item frontend/.env.example frontend/.env.local
 ```
 
 The browser client is a public Cognito app client with no secret. New users confirm their email
@@ -66,10 +101,12 @@ are present. In Google Cloud Console, create a Web OAuth client and add this aut
 https://COGNITO_DOMAIN/oauth2/idpresponse
 ```
 
-Deploy with the Google credentials supplied only to the local process or CI secret store:
+Deploy with the Google credentials supplied only to the local process or CI secret store. Set both
+variables in the same PowerShell session that runs CDK; values in `frontend/.env.local` are not read
+by the CDK app:
 
 ```powershell
-$env:GOOGLE_CLIENT_ID = 'your-google-client-id'
+$env:GOOGLE_CLIENT_ID = '718759290305-gvs5mvsjob52gus8umgd739ecstvijc7.apps.googleusercontent.com'
 $env:GOOGLE_CLIENT_SECRET = 'your-google-client-secret'
 npm run deploy
 ```
@@ -77,7 +114,7 @@ npm run deploy
 The current Google client ID is configured in the local environment file. The client secret must
 still be supplied in the terminal or as the GitHub Actions secret `GOOGLE_CLIENT_SECRET`.
 
-Copy the resulting `CognitoDomain` output into `NEXT_PUBLIC_COGNITO_DOMAIN` in
+After deployment, copy the resulting `CognitoDomain` output into `NEXT_PUBLIC_COGNITO_DOMAIN` in
 `frontend/.env.local`, then restart the frontend. Register `http://localhost:3000/` as an
 authorized JavaScript origin and callback URL in the Cognito app client configuration.
 

@@ -66,6 +66,10 @@ export class ApiStack extends cdk.Stack {
         : undefined,
     });
 
+    if (googleEnabled) {
+      userPoolClient.node.addDependency(this.node.findChild('GoogleProvider'));
+    }
+
     const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'ApiAuthorizer', {
       cognitoUserPools: [userPool],
     });
